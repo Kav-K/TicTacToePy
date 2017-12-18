@@ -1,6 +1,18 @@
 import pygame
 import random
 import time
+'''
+TicTacToePy by Kaveen Kumarasinghe
+Course Code: ICS3UO
+Student Number: 647992
+
+The changes and commits that this code has undergone are documented on GITHUB. My github profile can be found at https://github.com/Kav-K/
+'''
+
+
+
+
+
 
 '''
 The User will always be X
@@ -14,7 +26,7 @@ def init(_gametype):
     #Can be Computer or Human
     gametype = _gametype
     winner = 0
-    #0 for no one, 1 for player, 2 for computer, or 0 for no one, 1 for player 1, 2 for player 2
+    #0 for no one, 1 for player, 2 for computer, or 0 for no one, 1 for player 1, 2 for player 2. 3 for TIE
   
     #Slot on the right hand bottom corner that shows the game state and tie/win state.
     diffslot = pygame.Rect(300,450,200,49)
@@ -27,6 +39,7 @@ def init(_gametype):
 
 
     #Arrays for the blitting of Xs and Os
+    #These are used to paint the Xs and Os in the blitting function
     paintx = []
     painto = []
 
@@ -61,6 +74,10 @@ def init(_gametype):
     
     screen = pygame.display.set_mode((width,height))
 
+'''
+Check mouse click events while the game is running. Called once per loop execution
+'''
+
 def checkEvents():
     global done,playing,board_dimensions,board,userturn,winner
     
@@ -68,55 +85,63 @@ def checkEvents():
         if event.type == pygame.QUIT:
             done = True
 
-
+       #Monitor Events for MOUSEBUTTONDOWN, specifically button 1 (left click)
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if playing:
+                    #If game playing, search through the dimensions to check if the collidepoint of the click is equal to the box
                     for dimension in board_dimensions:
                         for subdimension in dimension:
-
+                            
+                            #Convert the selected box into a Rect object so we can use it later
                             rect = pygame.Rect(subdimension)
 
                             if (rect.collidepoint(event.pos)):
 
-                             #   print("CLICKED")
+                                #Obtain row and column from the two dimensions of the for loop
                                 row = board_dimensions.index(dimension)
                                 column = dimension.index(subdimension)
 
-                              #  print(row)
-                               # print(column)
+                           
 
                                 if userturn:
                                     #Keep allowing clicks and places as long as there are no wins
                                     if winner == 0:
                                         
-                                     #   print(winner)
+                                        
                                         placeUser(row,column)
-                                        #Switch the turn
+                                        
                                         
 
-
+                #If the collidepoint of the event click is within the bounds of the play button, start the game playing if not already playing
+                #If already playing, do nothing.
                 if (playbutton.collidepoint(event.pos)):
                     if playing:
                         return
                     userturn = True
                     playing = True
-                   # blitAll()
-
+                
+                #Jump into program from entry points again once the collidepoint of the event click within the bounds of the reset button
                 if (resetbutton.collidepoint(event.pos)):
                     init(gametype)
                     main()
+
+                #Once the collidepoint of the event click is within the bounds of the bottom right slot, change the game mode if not already playing
                 if (diffslot.collidepoint(event.pos)):
-                    if gametype == "2P":
-                        init("Computer")
-                    elif gametype == "Computer":
-                        init("2P")
-                    main()
+                    if not playing:
+                        if gametype == "2P":
+                            init("Computer")
+                        elif gametype == "Computer":
+                            init("2P")
+                        main()
                     
                                 
     return
 
 
+'''
+Draw the skeleton, this is used once per time in the loop
+'''
 def drawSkeleton():
     #DRAW GRID
     #VERTICALS
@@ -129,60 +154,68 @@ def drawSkeleton():
     #Draw Buttons
     #Play Button
     pygame.draw.rect(screen,BLACK,(playbutton.x,playbutton.y,playbutton.w,playbutton.h),2)
+    #Reset Button
     pygame.draw.rect(screen,BLACK,(resetbutton.x,resetbutton.y,resetbutton.w,resetbutton.h),2)
 
 
 def checkWinner():
     global winner
+    #Check for row Wins
     for row in range(0,3):
         if board[row][0] == board[row][1] and board[row][0] == board[row][2] and board[row][0] != "-":
-         #  print("There is a winner!")
+            #Determine who wins
             if board[row][0] == "X":
                 
                 winner = 1
             else:
                
                 winner = 2
+            #Obtain the two Rect objects for the start/end winning row
+
             rect1 = pygame.Rect(board_dimensions[row][0])
             rect2 = pygame.Rect(board_dimensions[row][2])
-           # blitAll()
+            #Draw a line for the winning row, this will stay on the screen since the checkEvents function is called once per loop.
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
             return
+    #Check for column wins
     for col in range(0,3):
         if board[0][col] == board[1][col] == board[2][col] and board[0][col] != "-":
-          #  print("There is a winner!")
+          
             if board[0][col] == "X":
                 winner = 1
             else:
                 winner = 2
             rect1 = pygame.Rect(board_dimensions[0][col])
             rect2 = pygame.Rect(board_dimensions[2][col])
-           # blitAll()
+      
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
             return
+    #Check for left to right diagonal wins
     if (board[0][0] == board[1][1] == board[2][2]) and (board[0][0] != "-"):
-      #  print("There is a winner!")
+  
         if board[0][0] == "X":
             winner = 1
         else:
             winner = 2
         rect1 = pygame.Rect(board_dimensions[0][0])
         rect2 = pygame.Rect(board_dimensions[2][2])
-       # blitAll()
+       
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)        
         return
+    #Check for right to left diagonal wins
     if (board[0][2] == board[1][1] == board[2][0]) and (board[0][2] != "-"):
-        #print("There is a winner!")
+      
         if board[0][2] == "X":
             winner = 1
         else:
             winner = 2
         rect1 = pygame.Rect(board_dimensions[0][2])
         rect2 = pygame.Rect(board_dimensions[2][0])
-       #blitAll()
+      
   
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
         return
+    #Iterate through the board to see how many filled spots there are, if there is not a win, and it is full, CALL A TIE
     nonempty = 0
     for dimension in board:
         for subdimension in dimension:
@@ -190,15 +223,18 @@ def checkWinner():
                 nonempty += 1
     if nonempty >= 9:
         winner = 3
-       # blitAll()
+       
        
  
   
    
+'''
+Choose a random empty spot on the board to place as a computer.
 
+'''
 def placeComputer():
  
-#TO BE REPLACED BY A SMARTER AI..
+
     global userturn
     ran1 = random.randint(0,2)
     ran2 = random.randint(0,2)
@@ -206,29 +242,30 @@ def placeComputer():
 
         board[ran1][ran2] = "O"
         painto.append(board_dimensions[ran1][ran2])
-      #  blitAll()
-        checkWinner()
+    
         userturn = True
         return
     else:
         try:
+            #RECURSIVE, if not empty, rerun this function
             placeComputer()
         except:
-            print("ok")
+            return
 
 
 
 
 def placeUser(row,column):
     global background,board_dimensions,board,paintx,painto,userturn
-    print("ROW: "+str(row),"Column: "+str(column))
-
+  
+    
+    #Switch the current user as this function runs each time (If the game type is 2Player)
     if gametype == "2P":
         if userturn == 1:
             placer = "X"
         else:
             placer = "O"
-        
+        #Change which user's turn it is
         if board[row][column] == "-":
             if userturn == 1:
                 userturn = 2
@@ -236,23 +273,19 @@ def placeUser(row,column):
                 userturn = 1
 
             board[row][column] = placer
-            print("DIMENSIONS: "+str(board_dimensions[row][column]))
+            
             if placer == "X":
                 paintx.append(board_dimensions[row][column])
             else:
                 painto.append(board_dimensions[row][column])
-            #blitAll()
-        
-       # time.sleep(0.8)
-
-    #Computer turn here
+     
     else:
         if board[row][column] != "O":
             board[row][column] = "X"
-            print("DIMENSIONS: "+str(board_dimensions[row][column]))
+           
             paintx.append(board_dimensions[row][column])
         
-           #blitAll()
+         
             placeComputer()
     
     
@@ -263,18 +296,19 @@ def blitAll():
     background.fill(ORANGE)
 
 
-    #TItle
+    #Title
     picture = pygame.image.load("title.png")
     picture = pygame.transform.scale(picture,(500,100))
     picturerect = picture.get_rect()
     picturerect.centerx = background.get_rect().centerx
     picturerect.centery = 50
+    #End Title 
     
-    
-    #End Title
+   
 
-    #Button Names
-    
+
+
+    #Button Names    
     if not playing:
         font = pygame.font.Font(None,38)
         play = font.render("Play",True,BLACK)
@@ -332,6 +366,7 @@ def blitAll():
         Xrect.centerx = rect.centerx
         Xrect.centery = rect.centery
         background.blit(X,Xrect)
+
     #Blit Os
     for section in painto:
         font2 = pygame.font.Font(None,100)
@@ -354,7 +389,7 @@ def main():
     global done,playing,background
 
     #Get background
-   # blitAll()
+   
 
     #Horizontal and vertical incrementors
     forwardh = True
@@ -367,7 +402,7 @@ def main():
     upwardv = False
     vertical = 100
     while not done:
-        #RESET Always 
+       
         
         if horizontal == 55:
             backwardh = False
@@ -380,9 +415,6 @@ def main():
         if backwardh:
             horizontal -= 2.5
 
-
-#    pygame.draw.line(screen,BLACK,(175,100),(175,425),3)
-   # pygame.draw.line(screen,BLACK,(325,100),(325,425),3)
     
         if vertical == 100:
             upwardv = False
@@ -402,7 +434,7 @@ def main():
         checkEvents()
         checkWinner()
         drawSkeleton() 
-        #55,200, 445,200
+        
         
         pygame.draw.line(screen,RED,(horizontal,200),(horizontal+150,200),3)
         pygame.draw.line(screen,RED,(horizontal,325),(horizontal+150,325),3)
