@@ -118,8 +118,10 @@ def checkEvents():
 
 def drawSkeleton():
     #DRAW GRID
+    #VERTICALS
     pygame.draw.line(screen,BLACK,(175,100),(175,425),3)
     pygame.draw.line(screen,BLACK,(325,100),(325,425),3)
+    #HORIZONTALS
     pygame.draw.line(screen,BLACK,(55,200),(445,200),3)
     pygame.draw.line(screen,BLACK,(55,325),(445,325),3)
 
@@ -351,17 +353,61 @@ def main():
     global done,playing,background
 
     #Get background
-    blitAll()
-    test = 0
+   # blitAll()
+
+    #Horizontal and vertical incrementors
+    forwardh = True
+    backwardh = False
+    horizontal = 55
+    
+
+
+    downwardv = True
+    upwardv = False
+    vertical = 100
     while not done:
         #RESET Always 
-        test += 1
+        
+        if horizontal == 55:
+            backwardh = False
+            forwardh = True
+        if horizontal == 300:
+            backwardh = True
+            forwardh = False
+        if forwardh:
+            horizontal+= 2.5
+        if backwardh:
+            horizontal -= 2.5
+
+
+#    pygame.draw.line(screen,BLACK,(175,100),(175,425),3)
+   # pygame.draw.line(screen,BLACK,(325,100),(325,425),3)
+    
+        if vertical == 100:
+            upwardv = False
+            downwardv = True
+        if vertical == 290:
+            downwardv = False
+            upwardv = True
+        
+        if downwardv:
+            vertical += 2.5
+        if upwardv:
+            vertical -= 2.5  
+
+
+
         blitAll()
         checkEvents()
         checkWinner()
         drawSkeleton() 
-        pygame.draw.line(screen,RED,(20+test,250),(25+test,250))
+        #55,200, 445,200
+        
+        pygame.draw.line(screen,RED,(horizontal,200),(horizontal+150,200),3)
+        pygame.draw.line(screen,RED,(horizontal,325),(horizontal+150,325),3)
 
+        pygame.draw.line(screen,RED,(175,vertical),(175,vertical+150),3)
+        pygame.draw.line(screen,RED,(325,vertical),(325,vertical+150),3)
         pygame.display.flip()
         clock.tick(60)
 
