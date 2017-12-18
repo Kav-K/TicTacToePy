@@ -6,18 +6,6 @@ import time
 The User will always be X
 Computer will always be O
 
-SMART AI IMPLEMENTATION STARTS HERE
-'''
-
-
-def smartAI(board,player):
-
-
-    print("todo")
-
-'''
-END MINIMAX, START GAME CODE
-
 '''
 def init(_gametype):
     global ORANGE,BLACK,RED,GREEN,WHITE,BLUE,YELLOW,PINK,GRAY,winner,diffslot,screen,done,clock,difficulty,playbutton,resetbutton,board,playing,board_dimensions,userturn,paintx,gametype,painto
@@ -96,18 +84,27 @@ def checkEvents():
                                # print(column)
 
                                 if userturn:
+                                    #Keep allowing clicks and places as long as there are no wins
                                     if winner == 0:
                                         
-                                        print(winner)
+                                     #   print(winner)
                                         placeUser(row,column)
+                                        #Switch the turn
+                                        if userturn == 1:
+                                            userturn = 2
+                                        elif userturn == 2:
+                                            userturn = 1
+
+
                 if (playbutton.collidepoint(event.pos)):
                     if playing:
                         return
                     userturn = True
                     playing = True
                     blitAll()
+
                 if (resetbutton.collidepoint(event.pos)):
-                    init()
+                    init("Computer")
                     main()
                     
                                 
@@ -142,7 +139,7 @@ def checkWinner():
             rect2 = pygame.Rect(board_dimensions[row][2])
             blitAll()
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
-            
+            return
     for col in range(0,3):
         if board[0][col] == board[1][col] == board[2][col] and board[0][col] != "-":
           #  print("There is a winner!")
@@ -154,7 +151,7 @@ def checkWinner():
             rect2 = pygame.Rect(board_dimensions[2][col])
             blitAll()
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
-            
+            return
     if (board[0][0] == board[1][1] == board[2][2]) and (board[0][0] != "-"):
       #  print("There is a winner!")
         if board[0][0] == "X":
@@ -165,7 +162,7 @@ def checkWinner():
         rect2 = pygame.Rect(board_dimensions[2][2])
         blitAll()
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)        
-     
+        return
     if (board[0][2] == board[1][1] == board[2][0]) and (board[0][2] != "-"):
         #print("There is a winner!")
         if board[0][2] == "X":
@@ -176,53 +173,73 @@ def checkWinner():
         rect2 = pygame.Rect(board_dimensions[2][0])
         blitAll()
   
-        pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)        
+        pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
+        return
+    nonempty = 0
+    for dimension in board:
+        for subdimension in dimension:
+            if subdimension != "-":
+                nonempty += 1
+    if nonempty >= 9:
+        winner = 3
+        blitAll()
        
  
   
    
 
 def placeComputer():
-    if difficulty == "Easy":
-        global userturn
-        ran1 = random.randint(0,2)
-        ran2 = random.randint(0,2)
-        if (board[ran1][ran2] == "-"):
+ 
+#TO BE REPLACED BY A SMARTER AI..
+    global userturn
+    ran1 = random.randint(0,2)
+    ran2 = random.randint(0,2)
+    if (board[ran1][ran2] == "-"):
 
-            board[ran1][ran2] = "O"
-            painto.append(board_dimensions[ran1][ran2])
-            blitAll()
-            checkWinner()
-            userturn = True
-            return
-        else:
-            try:
-                placeComputer()
-            except:
-                print("ok")
+        board[ran1][ran2] = "O"
+        painto.append(board_dimensions[ran1][ran2])
+        blitAll()
+        checkWinner()
+        userturn = True
+        return
+    else:
+        try:
+            placeComputer()
+        except:
+            print("ok")
 
 
-    #Algorithm for smart placing here...
-    #MINIMAX ALGORITHM IMPLEMENTATION
-    print(smartAI(board,"O"))
+
 
 def placeUser(row,column):
-    global background,board_dimensions,board,paintx
+    global background,board_dimensions,board,paintx,painto
     print("ROW: "+str(row),"Column: "+str(column))
 
-
-
-    if board[row][column] != "O":
-        board[row][column] = "X"
-        print("DIMENSIONS: "+str(board_dimensions[row][column]))
-        paintx.append(board_dimensions[row][column])
-    
-        blitAll()
+    if gametype == "2P":
+        if userturn == 1:
+            placer = "X"
+        else:
+            placer = "O"
+        if board[row][column] != placer:
+            board[row][column] = placer
+            print("DIMENSIONS: "+str(board_dimensions[row][column]))
+            if placer == "X":
+                paintx.append(board_dimensions[row][column])
+            else:
+                painto.append(board_dimensions[row][column])
+            blitAll()
         
        # time.sleep(0.8)
 
     #Computer turn here
-    placeComputer()
+    else:
+        if board[row][column] != "O":
+            board[row][column] = "X"
+            print("DIMENSIONS: "+str(board_dimensions[row][column]))
+            paintx.append(board_dimensions[row][column])
+        
+            blitAll()
+            placeComputer()
     
     
 def blitAll():
@@ -260,28 +277,36 @@ def blitAll():
     resetrect.centery = resetbutton.centery
 
     if winner == 0:
-        if difficulty == "Easy":
-            easy = font.render("Easy",True,GREEN)
+        if gametype == "2P":
+            easy = font.render("2 Player",True,GREEN)
             easyrect = easy.get_rect()
             easyrect.centerx = diffslot.centerx
             easyrect.centery = diffslot.centery
             background.blit(easy,easyrect)
         else:
-            hard = font.render("Hard",True,RED)
+            hard = font.render("Computer",True,RED)
             hardrect = hard.get_rect()
             hardrect.centerx = diffslot.centerx
             hardrect.centery = diffslot.centery
             background.blit(hard,hardrect)
     else:
         if winner == 2:
-            text = font.render("Comp Wins",True,RED)
-        else:
-            text = font.render("You Win",True,GREEN)
+            if gametype == "2P":
+                text = font.render("P2 Wins",True,RED)
+            else:
+                text = font.render("Computer Wins",True,RED)
+        elif winner == 1:
+            if gametype == "2P":
+                text = font.render("P1 Wins",True,GREEN)
+            else:
+                text = font.render("You Win",True,GREEN)
+        elif winner == 3:
+            text = font.render("TIE",True,YELLOW)
         textrect = text.get_rect()
         textrect.centerx = diffslot.centerx
         textrect.centery = diffslot.centery
         background.blit(text,textrect)
-        oneblit = True
+
         
     
     #Blit Xs
@@ -331,7 +356,7 @@ def main():
 
 
 
-init()
+init("2P")
 main()
 
 
