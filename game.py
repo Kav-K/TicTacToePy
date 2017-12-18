@@ -283,7 +283,7 @@ def placeUser(row,column):
     else:
         
         #This is for when it's computer gamemode, just append the user's click to the to be drawn array and call the computer decision function
-        if board[row][column] != "O":
+        if board[row][column] == "-":
             board[row][column] = "X"
            
             paintx.append(board_dimensions[row][column])
