@@ -92,10 +92,7 @@ def checkEvents():
                                      #   print(winner)
                                         placeUser(row,column)
                                         #Switch the turn
-                                        if userturn == 1:
-                                            userturn = 2
-                                        elif userturn == 2:
-                                            userturn = 1
+                                        
 
 
                 if (playbutton.collidepoint(event.pos)):
@@ -103,7 +100,7 @@ def checkEvents():
                         return
                     userturn = True
                     playing = True
-                    blitAll()
+                   # blitAll()
 
                 if (resetbutton.collidepoint(event.pos)):
                     init(gametype)
@@ -145,7 +142,7 @@ def checkWinner():
                 winner = 2
             rect1 = pygame.Rect(board_dimensions[row][0])
             rect2 = pygame.Rect(board_dimensions[row][2])
-            blitAll()
+           # blitAll()
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
             return
     for col in range(0,3):
@@ -157,7 +154,7 @@ def checkWinner():
                 winner = 2
             rect1 = pygame.Rect(board_dimensions[0][col])
             rect2 = pygame.Rect(board_dimensions[2][col])
-            blitAll()
+           # blitAll()
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
             return
     if (board[0][0] == board[1][1] == board[2][2]) and (board[0][0] != "-"):
@@ -168,7 +165,7 @@ def checkWinner():
             winner = 2
         rect1 = pygame.Rect(board_dimensions[0][0])
         rect2 = pygame.Rect(board_dimensions[2][2])
-        blitAll()
+       # blitAll()
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)        
         return
     if (board[0][2] == board[1][1] == board[2][0]) and (board[0][2] != "-"):
@@ -179,7 +176,7 @@ def checkWinner():
             winner = 2
         rect1 = pygame.Rect(board_dimensions[0][2])
         rect2 = pygame.Rect(board_dimensions[2][0])
-        blitAll()
+       #blitAll()
   
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
         return
@@ -190,7 +187,7 @@ def checkWinner():
                 nonempty += 1
     if nonempty >= 9:
         winner = 3
-        blitAll()
+       # blitAll()
        
  
   
@@ -206,7 +203,7 @@ def placeComputer():
 
         board[ran1][ran2] = "O"
         painto.append(board_dimensions[ran1][ran2])
-        blitAll()
+      #  blitAll()
         checkWinner()
         userturn = True
         return
@@ -220,7 +217,7 @@ def placeComputer():
 
 
 def placeUser(row,column):
-    global background,board_dimensions,board,paintx,painto
+    global background,board_dimensions,board,paintx,painto,userturn
     print("ROW: "+str(row),"Column: "+str(column))
 
     if gametype == "2P":
@@ -228,14 +225,20 @@ def placeUser(row,column):
             placer = "X"
         else:
             placer = "O"
-        if board[row][column] != placer:
+        
+        if board[row][column] == "-":
+            if userturn == 1:
+                userturn = 2
+            elif userturn == 2:
+                userturn = 1
+
             board[row][column] = placer
             print("DIMENSIONS: "+str(board_dimensions[row][column]))
             if placer == "X":
                 paintx.append(board_dimensions[row][column])
             else:
                 painto.append(board_dimensions[row][column])
-            blitAll()
+            #blitAll()
         
        # time.sleep(0.8)
 
@@ -246,7 +249,7 @@ def placeUser(row,column):
             print("DIMENSIONS: "+str(board_dimensions[row][column]))
             paintx.append(board_dimensions[row][column])
         
-            blitAll()
+           #blitAll()
             placeComputer()
     
     
@@ -349,14 +352,15 @@ def main():
 
     #Get background
     blitAll()
-    
+    test = 0
     while not done:
         #RESET Always 
-        
-        drawSkeleton() 
+        test += 1
+        blitAll()
         checkEvents()
         checkWinner()
-       
+        drawSkeleton() 
+        pygame.draw.line(screen,RED,(20+test,250),(25+test,250))
 
         pygame.display.flip()
         clock.tick(60)
