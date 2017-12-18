@@ -16,8 +16,10 @@ def init(_gametype):
     winner = 0
     #0 for no one, 1 for player, 2 for computer, or 0 for no one, 1 for player 1, 2 for player 2
   
-
+    #Slot on the right hand bottom corner that shows the game state and tie/win state.
     diffslot = pygame.Rect(300,450,200,49)
+
+
     if gametype == "Computer":
         userturn = False
     else:
@@ -104,7 +106,13 @@ def checkEvents():
                     blitAll()
 
                 if (resetbutton.collidepoint(event.pos)):
-                    init("Computer")
+                    init(gametype)
+                    main()
+                if (diffslot.collidepoint(event.pos)):
+                    if gametype == "2P":
+                        init("Computer")
+                    elif gametype == "Computer":
+                        init("2P")
                     main()
                     
                                 
