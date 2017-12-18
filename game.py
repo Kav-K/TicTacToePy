@@ -44,6 +44,7 @@ def init(_gametype):
     clock = pygame.time.Clock()
     done = False
     pygame.init()
+    pygame.display.set_caption('Tic Tac Toe - Kaveen Kumarasinghe')
     width,height = 500,500
 
 
