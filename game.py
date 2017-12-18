@@ -19,29 +19,44 @@ def smartAI(board,player):
 END MINIMAX, START GAME CODE
 
 '''
-def init():
-    global ORANGE,BLACK,RED,GREEN,WHITE,BLUE,YELLOW,PINK,GRAY,winner,diffslot,screen,done,clock,difficulty,playbutton,resetbutton,board,playing,board_dimensions,userturn,paintx,painto
+def init(_gametype):
+    global ORANGE,BLACK,RED,GREEN,WHITE,BLUE,YELLOW,PINK,GRAY,winner,diffslot,screen,done,clock,difficulty,playbutton,resetbutton,board,playing,board_dimensions,userturn,paintx,gametype,painto
     playing = False
-  
+
+    #Can be Computer or Human
+    gametype = _gametype
     winner = 0
-    #0 for no one, 1 for player, 2 for computer.
+    #0 for no one, 1 for player, 2 for computer, or 0 for no one, 1 for player 1, 2 for player 2
   
-    difficulty = "Hard"
+
     diffslot = pygame.Rect(300,450,200,49)
-    userturn = False
-    #Three Dim. Array
+    if gametype == "Computer":
+        userturn = False
+    else:
+        userturn = 1
+
+
+    #Arrays for the blitting of Xs and Os
     paintx = []
     painto = []
+
+    #Three dimensional arrays for the board
     board = [["-","-","-"],["-","-","-"],["-","-","-"]]
     board_dimensions = [[(55,100,125,100),(175,100,150,100),(325,100,125,100)],[(55,200,125,120),(175,200,150,125),(325,200,125,125)],[(55,325,125,100),(175,325,150,100),(325,325,125,100)]]
-    #Object definitions
+
+
+    #Rect Object definitions
     playbutton = pygame.Rect(0,450,150,49)
     resetbutton = pygame.Rect(150,450,150,49)
+
+
     #Setup
     clock = pygame.time.Clock()
     done = False
     pygame.init()
     width,height = 500,500
+
+
     #Colors
     ORANGE = 255,153,51
     RED = 255,0,0
@@ -61,18 +76,25 @@ def checkEvents():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
+
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if playing:
                     for dimension in board_dimensions:
                         for subdimension in dimension:
+
                             rect = pygame.Rect(subdimension)
+
                             if (rect.collidepoint(event.pos)):
-                                print("CLICKED")
+
+                             #   print("CLICKED")
                                 row = board_dimensions.index(dimension)
                                 column = dimension.index(subdimension)
-                                print(row)
-                                print(column)
+
+                              #  print(row)
+                               # print(column)
+
                                 if userturn:
                                     if winner == 0:
                                         
@@ -305,6 +327,9 @@ def main():
 
         pygame.display.flip()
         clock.tick(60)
+
+
+
 
 init()
 main()
