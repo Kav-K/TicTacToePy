@@ -6,7 +6,7 @@ TicTacToePy by Kaveen Kumarasinghe
 Course Code: ICS3UO
 Student Number: 647992
 
-The changes and commits that this code has undergone are documented on GITHUB. My github profile can be found at https://github.com/Kav-K/
+The changes and commits that this code has undergone are documented on GITHUB. My github profile can be found at https://github.com/Kav-K/TicTacToePy.git
 '''
 
 
@@ -271,15 +271,18 @@ def placeUser(row,column):
                 userturn = 2
             elif userturn == 2:
                 userturn = 1
-
+            #Set the value of the specified square in the 3dim board array
             board[row][column] = placer
             
+            #Append the value to the paintx/painto list to be drawn by the blit.
             if placer == "X":
                 paintx.append(board_dimensions[row][column])
             else:
                 painto.append(board_dimensions[row][column])
      
     else:
+        
+        #This is for when it's computer gamemode, just append the user's click to the to be drawn array and call the computer decision function
         if board[row][column] != "O":
             board[row][column] = "X"
            
@@ -291,6 +294,7 @@ def placeUser(row,column):
     
 def blitAll():
     global background,playing,userturn
+    #GEt a background surface to blit everything else to, the background surface will be blit into the main screen surface in the end.
     background = pygame.Surface(screen.get_size())
     background = background.convert()
     background.fill(ORANGE)
@@ -308,7 +312,7 @@ def blitAll():
 
 
 
-    #Button Names    
+    #Button Names to be blitted    
     if not playing:
         font = pygame.font.Font(None,38)
         play = font.render("Play",True,BLACK)
@@ -316,6 +320,7 @@ def blitAll():
         font = pygame.font.Font(None,38)
         play = font.render("Playing",True,GRAY)
     playrect = play.get_rect()
+    #Set the center of the button to the center of the bounds of the box Rect object that was defined on init()
     playrect.centerx = playbutton.centerx
     playrect.centery = playbutton.centery
 
@@ -324,10 +329,12 @@ def blitAll():
     resetrect.centerx = resetbutton.centerx
     resetrect.centery = resetbutton.centery
 
+    #If not in a win state, display the game moode (2 Player) or (Computer)
     if winner == 0:
         if gametype == "2P":
             easy = font.render("2 Player",True,GREEN)
             easyrect = easy.get_rect()
+            #Set the text centered to the diffslot (The bottom right hand corner box)
             easyrect.centerx = diffslot.centerx
             easyrect.centery = diffslot.centery
             background.blit(easy,easyrect)
@@ -338,6 +345,7 @@ def blitAll():
             hardrect.centery = diffslot.centery
             background.blit(hard,hardrect)
     else:
+        #If in a win state, display the winner, or a tie
         if winner == 2:
             if gametype == "2P":
                 text = font.render("P2 Wins",True,RED)
@@ -378,7 +386,7 @@ def blitAll():
         background.blit(O,Orect)
                 
 
-    print(board)
+  
     #Draw all to screen
     background.blit(reset,resetrect)
     background.blit(picture,picturerect)
@@ -388,41 +396,43 @@ def blitAll():
 def main():
     global done,playing,background
 
-    #Get background
+  
    
 
     #Horizontal and vertical incrementors
+    #Horizontal. Determines the start position of the animation, and whether it goes backwards or forward
     forwardh = True
     backwardh = False
     horizontal = 55
     
 
-
+    #Vertical, determines the start position of the animation and whether it goes downwards or upwards
     downwardv = True
     upwardv = False
     vertical = 100
     while not done:
        
-        
+        #Animation Bounds
         if horizontal == 55:
             backwardh = False
             forwardh = True
         if horizontal == 300:
             backwardh = True
             forwardh = False
+        #Animation Speed
         if forwardh:
             horizontal+= 2.5
         if backwardh:
             horizontal -= 2.5
 
-    
+        #Animation Bounds
         if vertical == 100:
             upwardv = False
             downwardv = True
         if vertical == 290:
             downwardv = False
             upwardv = True
-        
+        #Animation Speed
         if downwardv:
             vertical += 2.5
         if upwardv:
@@ -431,17 +441,23 @@ def main():
 
 
         blitAll()
+
         checkEvents()
+
         checkWinner()
+
         drawSkeleton() 
         
-        
+        #Draw the animated lines using the incrementors.
         pygame.draw.line(screen,RED,(horizontal,200),(horizontal+150,200),3)
         pygame.draw.line(screen,RED,(horizontal,325),(horizontal+150,325),3)
 
         pygame.draw.line(screen,RED,(175,vertical),(175,vertical+150),3)
         pygame.draw.line(screen,RED,(325,vertical),(325,vertical+150),3)
+
+
         pygame.display.flip()
+        #Fix Frame Rate
         clock.tick(60)
 
 
