@@ -32,7 +32,8 @@ def calculateComputer(board,player):
     computes if the player will win or not.
     Takes input as a list instead of a three dimensional array like we had before, the list here is in this type of format "XX-XOO--X"
 
-    Returns next
+    Returns resultor value, and the next move value (1D)
+    Resultor values are: 0 - TIE OR OK STATE , 1 - X WIN, 2, O WIN.
     """
 
 
@@ -63,7 +64,7 @@ def calculateComputer(board,player):
         row,column =calculateComputer(board,nextplayer)
 
         result.append(row)
-        #Reset the square that was changed at the end of this
+        #Reset the square that was changed at the end of this to figure out the viability of the next move
         board[i]='-'
     if player == 'X':
         resultor = max(result)
@@ -307,16 +308,17 @@ def placeComputer():
             row = board.index(dimension)
             column = dimension.index(subdimension)
             totalstring += board[row][column]
-    print(totalstring)
     #Actually Get the Result
     #Board is always O, therefore player will always be O
     resultor,calcmove =  calculateComputer(list(totalstring),"O")
     #The calculated value is for a one dimensional board, therefore we must convert it into a 3 dimensional instruction
-    #This is quite trivial
+    #Python has no switch statements so we will have to trivially do it with if statements
+   
+    #Initial state
     row,column = 0,0
+
     #make sure result is valid
     #If the board is NOT in a winning state
-        
     if resultor == 0:
         if calcmove == 0:
             row = 0
@@ -345,14 +347,7 @@ def placeComputer():
         elif calcmove == 8:
             row = 2
             column = 2
-    #If board is in a winning state in favor of the user, just randomly place something somewhere.
-
-        
-
-
-
-    print(row)
-    print(column)
+   
 
     #This section is for if the game is in a WIN state, or if there is an unknown error, it will find the closest available position that is empty and select that spot.
     try:
