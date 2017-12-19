@@ -11,8 +11,8 @@ the best possible move.
 
 NOTE: A Full trace of all my work and additions/removals can be found on my github timeline.
 
-NOTE: The Min/Max implementation was built in reference to and with help from an exist github project regarding one dimensional tic tac toe with the algorithm. The sources are: https://cwoebker.com/posts/tic-tac-toe
-                            https://gist.github.com/SudhagarS/3942029
+NOTE: The Min/Max implementation was built in reference to and with help from an exist github project regarding one dimensional tic tac toe with the algorithm. The sources are: https://cwoebker.com/posts/tic-tac-toe and
+https://gist.github.com/SudhagarS/3942029
 
 
 '''
@@ -21,11 +21,40 @@ NOTE: The Min/Max implementation was built in reference to and with help from an
 
 
 '''
-MIN/MAX Implementation, find the next best move
+MIN/MAX Implementation, find the next best move coupled with check1D Win
 
 
 '''
+def check1DWin(board):
+    
+    """
+    Unlike checkWinner, this works for the one dimensional array required for the minmax algorithm. Returns true if the given board is in a win state
+    """
+    #Row
+    for i in range(3):
+        #Splice list into immutables, if they are full and the same character return True
+        if len(set(board[i*3:i*3+3])) == 1 and board[i*3] != '-': 
+            
+            #print(str(set(board[i*3:i*3+3]))) <-I found this useful for debug purposes
+            return True
 
+
+    #Column Combos
+    for i in range(3):
+       if (board[i] == board[i+3]) and (board[i] == board[i+6]) and board[i] != '-':
+           return True
+
+
+    #Diagonal Cases
+    #Left to Right, check tips and check if middle isn't empty
+    if board[0] == board[4] and board[4] == board[8] and board[4] != '-':
+        return  True
+
+
+    #Right to Left
+    if board[2] == board[4] and board[4] == board[6] and board[4] != '-':
+        return  True
+    return False
 
 def calculateComputer(board,player):
     """
@@ -36,15 +65,25 @@ def calculateComputer(board,player):
     Returns resultor value, and the next move value (1D)
     Resultor values are: 0 - TIE OR OK STATE , 1 - X WIN, 2, O WIN.
     """
+    if len(set(board)) == 1: return 0,4
     #This whole function plays a virtual game, so switch the player each time it is called
     if player=='O': 
         nextplayer ="X"
     else:
         nextplayer = 'O'
 
+    #Check for a win state
+    if check1DWin(board) :
+        if player == 'X':
+     
+            return -1,-1
+        else: 
+           
+            return 1,-1
+    
     result=[] # list for appending the result
     empties= board.count('-')
-
+   
     #We do this to check if the board is full. This is important because it stops the recursivity below when it reaches an end state.
     if  empties is 0:
         return 0,-1
@@ -66,26 +105,40 @@ def calculateComputer(board,player):
         result.append(resultor)
         #Reset the square that was changed at the end of this to figure out the viability of the next move
         board[i]='-'
+
+
     if player == 'X':
         resultor = max(result)
         #The win state for X is 1, therefore, find the max in the list of results, this will have a move in it that depicts a win state.
-        return row,emptylist[result.index(resultor)]
+    
+        return resultor,emptylist[result.index(resultor)]
     else :
         #The win state for O is -1, therefore, find the max in the list of results, this will have a move in it that depicts a win state.
         resultor = min(result)
+       
         return resultor,emptylist[result.index(resultor)]
 
 
 
 
 '''
-The User will always be X
-Computer will always be O
+END Min/Max Implementation
 
 '''
+
+
+
+'''
+Initial entrypoint, gametype determines the functionality of the game, and whether AI should be
+activated or not.
+'''
+
 def init(_gametype):
-    global ORANGE,BLACK,RED,GREEN,WHITE,BLUE,YELLOW,PINK,GRAY,winner,diffslot,screen,done,clock,difficulty,playbutton,resetbutton,board,playing,board_dimensions,userturn,paintx,gametype,painto
+    global ORANGE,BLACK,RED,GREEN,WHITE,BLUE,YELLOW,PINK,GRAY,winner,diffslot,screen,done,clock,difficulty,playbutton,resetbutton,board,playing,board_dimensions,userturn,limiter,paintx,gametype,painto
     playing = False
+    #Prevent any hiccups with the limiter (Double placements by computer, etc)
+    limiter = False
+
 
     #Can be Computer or Human
     gametype = _gametype
@@ -153,6 +206,7 @@ def checkEvents():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if playing:
+
                     #If game playing, search through the dimensions to check if the collidepoint of the click is equal to the box
                     for dimension in board_dimensions:
                         for subdimension in dimension:
@@ -224,6 +278,7 @@ def drawSkeleton():
 
 def checkWinner():
     global winner
+
     #Check for row Wins
     for row in range(0,3):
         if board[row][0] == board[row][1] and board[row][0] == board[row][2] and board[row][0] != "-":
@@ -234,13 +289,17 @@ def checkWinner():
             else:
                
                 winner = 2
-            #Obtain the two Rect objects for the start/end winning row
 
+            #Obtain the two Rect objects for the start/end winning row
             rect1 = pygame.Rect(board_dimensions[row][0])
             rect2 = pygame.Rect(board_dimensions[row][2])
+
             #Draw a line for the winning row, this will stay on the screen since the checkEvents function is called once per loop.
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
+
             return True
+
+
     #Check for column wins
     for col in range(0,3):
         if board[0][col] == board[1][col] == board[2][col] and board[0][col] != "-":
@@ -254,6 +313,8 @@ def checkWinner():
       
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
             return True
+
+
     #Check for left to right diagonal wins
     if (board[0][0] == board[1][1] == board[2][2]) and (board[0][0] != "-"):
   
@@ -266,6 +327,8 @@ def checkWinner():
        
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)        
         return True
+
+
     #Check for right to left diagonal wins
     if (board[0][2] == board[1][1] == board[2][0]) and (board[0][2] != "-"):
       
@@ -279,6 +342,8 @@ def checkWinner():
   
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
         return True
+
+
     #Iterate through the board to see how many filled spots there are, if there is not a win, and it is full, CALL A TIE
     nonempty = 0
     for dimension in board:
@@ -298,8 +363,8 @@ Choose a random empty spot on the board to place as a computer.
 
 '''
 def placeComputer():
- 
-
+    global limiter
+   
     #Convert the board into a 1D array first
     #We'll go from a string into a list, since it is much easier to do so
 
@@ -309,18 +374,21 @@ def placeComputer():
             row = board.index(dimension)
             column = dimension.index(subdimension)
             totalstring += board[row][column]
+
     #Actually Get the Result
     #Board is always O, therefore player will always be O
     resultor,calcmove =  calculateComputer(list(totalstring),"O")
+
+
     #The calculated value is for a one dimensional board, therefore we must convert it into a 3 dimensional instruction
     #Python has no switch statements so we will have to trivially do it with if statements
-   
+
     #Initial state
     row,column = 0,0
 
     #make sure result is valid
-    #If the board is NOT in a winning state
-    if resultor == 0:
+    #If the board is in a win state, it will complete the trio and the checkWinner will pick up a win, otherwise, it will play normally.
+    if resultor == 0 or resultor == -1 or resultor == 1:
         if calcmove == 0:
             row = 0
             column = 0
@@ -350,18 +418,24 @@ def placeComputer():
             column = 2
    
 
-    #This section is for if the game is in a WIN state, or if there is an unknown error, it will find the closest available position that is empty and select that spot.
+    
     try:
-        board[row][column] = "O"
-        painto.append(board_dimensions[row][column])
+        if not limiter and board[row][column] == "-":
+            board[row][column] = "O"
+            painto.append(board_dimensions[row][column])
+            limiter = True
     except:
+
+        #This section is for if the game is in a WIN state, or if there is an unknown error, it will find the closest available position that is empty and select that spot.
         for dimension in board:
             for subdimension in dimension:
                 if (subdimension == "-"):
-                       row = board.index(dimension)
-                       column = dimension.index(subdimension)
-                       board[row][column] = "O"
-                       painto.append(board_dimensions[row][column])
+                       if not limiter:
+                           row = board.index(dimension)
+                           column = dimension.index(subdimension)
+                           board[row][column] = "O"
+                           painto.append(board_dimensions[row][column])
+                           limiter = True
                        
                        break
     userturn = True
@@ -372,7 +446,7 @@ def placeComputer():
 
 
 def placeUser(row,column):
-    global background,board_dimensions,board,paintx,painto,userturn
+    global background,board_dimensions,board,paintx,painto,userturn,limiter
   
     
     #Switch the current user as this function runs each time (If the game type is 2Player)
@@ -381,12 +455,15 @@ def placeUser(row,column):
             placer = "X"
         else:
             placer = "O"
+
+
         #Change which user's turn it is
         if board[row][column] == "-":
             if userturn == 1:
                 userturn = 2
             elif userturn == 2:
                 userturn = 1
+
             #Set the value of the specified square in the 3dim board array
             board[row][column] = placer
             
@@ -404,12 +481,13 @@ def placeUser(row,column):
            
             paintx.append(board_dimensions[row][column])
         
-         
+            limiter = False
             placeComputer()
     
     
 def blitAll():
     global background,playing,userturn
+
     #GEt a background surface to blit everything else to, the background surface will be blit into the main screen surface in the end.
     background = pygame.Surface(screen.get_size())
     background = background.convert()
@@ -436,6 +514,8 @@ def blitAll():
         font = pygame.font.Font(None,38)
         play = font.render("Playing",True,GRAY)
     playrect = play.get_rect()
+
+
     #Set the center of the button to the center of the bounds of the box Rect object that was defined on init()
     playrect.centerx = playbutton.centerx
     playrect.centery = playbutton.centery
@@ -450,6 +530,7 @@ def blitAll():
         if gametype == "2P":
             easy = font.render("2 Player",True,GREEN)
             easyrect = easy.get_rect()
+
             #Set the text centered to the diffslot (The bottom right hand corner box)
             easyrect.centerx = diffslot.centerx
             easyrect.centery = diffslot.centery
@@ -461,6 +542,7 @@ def blitAll():
             hardrect.centery = diffslot.centery
             background.blit(hard,hardrect)
     else:
+
         #If in a win state, display the winner, or a tie
         if winner == 2:
             if gametype == "2P":
@@ -535,6 +617,7 @@ def main():
         if horizontal == 300:
             backwardh = True
             forwardh = False
+
         #Animation Speed
         if forwardh:
             horizontal+= 2.5
@@ -548,6 +631,7 @@ def main():
         if vertical == 290:
             downwardv = False
             upwardv = True
+
         #Animation Speed
         if downwardv:
             vertical += 2.5
@@ -573,6 +657,7 @@ def main():
 
 
         pygame.display.flip()
+
         #Fix Frame Rate
         clock.tick(60)
 
