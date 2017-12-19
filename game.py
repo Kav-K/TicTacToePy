@@ -7,7 +7,11 @@ Course Code: ICS3UO
 Student Number: 647992
 
 The changes and commits that this code has undergone are documented on GITHUB. My github profile can be found at https://github.com/Kav-K/TicTacToePy.git The computer game mode is smart and implements AI. It uses an implementation of the min/max algorithm from game theory to find
-the best possible move
+the best possible move.
+
+NOTE: ABSOLUTELY NO CODE WAS COPIED OR USED FROM UNAUTHORIZED SOURCES.
+NOTE: The Min/Max implementation was built in reference to an exist github project regarding one dimensional tic tac toe with the algorithm. The sources are: https://cwoebker.com/posts/tic-tac-toe
+             https://gist.github.com/SudhagarS/3942029
 
 
 '''
