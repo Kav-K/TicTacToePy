@@ -6,10 +6,68 @@ TicTacToePy by Kaveen Kumarasinghe
 Course Code: ICS3UO
 Student Number: 647992
 
-The changes and commits that this code has undergone are documented on GITHUB. My github profile can be found at https://github.com/Kav-K/TicTacToePy.git
+The changes and commits that this code has undergone are documented on GITHUB. My github profile can be found at https://github.com/Kav-K/TicTacToePy.git The computer game mode is smart and implements AI. It uses an implementation of the min/max algorithm from game theory to find
+the best possible move
+
+
 '''
 
 
+
+
+'''
+MIN/MAX Implementation, find the next best move
+
+
+'''
+
+
+def calculateComputer(board,player):
+    """
+    Computes the next move for a player given the current board state and also
+    computes if the player will win or not.
+    Takes input as a list instead of a three dimensional array like we had before, the list here is in this type of format "XX-XOO--X"
+
+    Returns next
+    """
+
+
+    #This whole function plays a virtual game, so switch the player each time it is called
+    if player=='O': 
+        nextplayer ="X"
+    else:
+        nextplayer = 'O'
+
+    result=[] # list for appending the result
+    empties= board.count('-')
+
+    #We do this to check if the board is full. This is important because it stops the recursivity below when it reaches an end state.
+    if  empties is 0:
+        return 0,-1
+
+
+    emptylist=[] # list for storing the indexes where '-' appears
+    for i in range(len(board)):
+        if board[i] == '-':
+            #Build the list of empties.
+            emptylist.append(i)
+
+    for i in emptylist:
+        #For each empty index in the empties list, set it equal to the player, and recursively obtain the next move by playing a "Virtual game" by repeating this set of instructions recursively. Reference looked at for this was https://cwoebker.com/posts/tic-tac-toe <- Their implementation was using objects, but I was able to comprehend and port it into an implementation of my own without object oriented programming
+        board[i]=player
+
+        row,column =calculateComputer(board,nextplayer)
+
+        result.append(row)
+        #Reset the square that was changed at the end of this
+        board[i]='-'
+    if player == 'X':
+        resultor = max(result)
+        #row,column. Using emptylist, because the next move has to be a suitable placement that isn't already taken up by anything
+        return row,emptylist[result.index(resultor)]
+    else :
+        resultor = min(result)
+        return resultor,emptylist[result.index(resultor)]
 
 
 
@@ -176,7 +234,7 @@ def checkWinner():
             rect2 = pygame.Rect(board_dimensions[row][2])
             #Draw a line for the winning row, this will stay on the screen since the checkEvents function is called once per loop.
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
-            return
+            return True
     #Check for column wins
     for col in range(0,3):
         if board[0][col] == board[1][col] == board[2][col] and board[0][col] != "-":
@@ -189,7 +247,7 @@ def checkWinner():
             rect2 = pygame.Rect(board_dimensions[2][col])
       
             pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
-            return
+            return True
     #Check for left to right diagonal wins
     if (board[0][0] == board[1][1] == board[2][2]) and (board[0][0] != "-"):
   
@@ -201,7 +259,7 @@ def checkWinner():
         rect2 = pygame.Rect(board_dimensions[2][2])
        
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)        
-        return
+        return True
     #Check for right to left diagonal wins
     if (board[0][2] == board[1][1] == board[2][0]) and (board[0][2] != "-"):
       
@@ -214,7 +272,7 @@ def checkWinner():
       
   
         pygame.draw.line(screen,BLACK,(rect1.centerx,rect1.centery),(rect2.centerx,rect2.centery),10)
-        return
+        return True
     #Iterate through the board to see how many filled spots there are, if there is not a win, and it is full, CALL A TIE
     nonempty = 0
     for dimension in board:
@@ -223,6 +281,7 @@ def checkWinner():
                 nonempty += 1
     if nonempty >= 9:
         winner = 3
+    return False
        
        
  
@@ -235,22 +294,79 @@ Choose a random empty spot on the board to place as a computer.
 def placeComputer():
  
 
-    global userturn
-    ran1 = random.randint(0,2)
-    ran2 = random.randint(0,2)
-    if (board[ran1][ran2] == "-"):
+    #Convert the board into a 1D array first
+    #We'll go from a string into a list, since it is much easier to do so
 
-        board[ran1][ran2] = "O"
-        painto.append(board_dimensions[ran1][ran2])
-    
-        userturn = True
-        return
-    else:
-        try:
-            #RECURSIVE, if not empty, rerun this function
-            placeComputer()
-        except:
-            return
+    totalstring = ""
+    for dimension in board:
+        for subdimension in dimension:
+            row = board.index(dimension)
+            column = dimension.index(subdimension)
+            totalstring += board[row][column]
+    print(totalstring)
+    #Actually Get the Result
+    #Board is always O, therefore player will always be O
+    resultor,calcmove =  calculateComputer(list(totalstring),"O")
+    #The calculated value is for a one dimensional board, therefore we must convert it into a 3 dimensional instruction
+    #This is quite trivial
+    row,column = 0,0
+    #make sure result is valid
+    #If the board is NOT in a winning state
+        
+    if resultor == 0:
+        if calcmove == 0:
+            row = 0
+            column = 0
+        elif calcmove == 1:
+            row = 0
+            column = 1
+        elif calcmove == 2:
+            row = 0
+            column = 2
+        elif calcmove == 3:
+            row = 1
+            column = 0
+        elif calcmove == 4:
+            row = 1
+            column = 1
+        elif calcmove == 5:
+            row = 1
+            column = 3
+        elif calcmove == 6:
+            row = 2
+            column = 0
+        elif calcmove == 7:
+            row = 2
+            column = 1
+        elif calcmove == 8:
+            row = 2
+            column = 2
+    #If board is in a winning state in favor of the user, just randomly place something somewhere.
+
+        
+
+
+
+    print(row)
+    print(column)
+
+    #This section is for if the game is in a WIN state, or if there is an unknown error, it will find the closest available position that is empty and select that spot.
+    try:
+        board[row][column] = "O"
+        painto.append(board_dimensions[row][column])
+    except:
+        for dimension in board:
+            for subdimension in dimension:
+                if (subdimension == "-"):
+                       row = board.index(dimension)
+                       column = dimension.index(subdimension)
+                       board[row][column] = "O"
+                       painto.append(board_dimensions[row][column])
+                       
+                       break
+    userturn = True
+    return
+
 
 
 
