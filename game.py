@@ -60,16 +60,18 @@ def calculateComputer(board,player):
         #For each empty index in the empties list, set it equal to the player, and recursively obtain the next move by playing a "Virtual game" by repeating this set of instructions recursively. Reference looked at for this was https://cwoebker.com/posts/tic-tac-toe <- Their implementation was using objects, but I was able to comprehend and port it into an implementation of my own without object oriented programming
         board[i]=player
 
-        row,column =calculateComputer(board,nextplayer)
+        resultor,column =calculateComputer(board,nextplayer)
+        #Play the virtual game until the resultor depicts a win state, the win state will be checked at the end.
 
-        result.append(row)
+        result.append(resultor)
         #Reset the square that was changed at the end of this to figure out the viability of the next move
         board[i]='-'
     if player == 'X':
         resultor = max(result)
-        #row,column. Using emptylist, because the next move has to be a suitable placement that isn't already taken up by anything
+        #The win state for X is 1, therefore, find the max in the list of results, this will have a move in it that depicts a win state.
         return row,emptylist[result.index(resultor)]
     else :
+        #The win state for O is -1, therefore, find the max in the list of results, this will have a move in it that depicts a win state.
         resultor = min(result)
         return resultor,emptylist[result.index(resultor)]
 
