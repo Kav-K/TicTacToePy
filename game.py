@@ -5,8 +5,9 @@ import time
 TicTacToePy by Kaveen Kumarasinghe
 Course Code: ICS3UO
 Student Number: 647992
+Version Control: https://github.com/Kav-K/TicTacToePy.git
 
-The changes and commits that this code has undergone are documented on GITHUB. My github profile can be found at https://github.com/Kav-K/TicTacToePy.git The computer game mode is smart and implements AI. It uses an implementation of the min/max algorithm from game theory to find
+The computer game mode is smart and implements AI. It uses an implementation of the min/max algorithm from game theory to find
 the best possible move.
 
 NOTE: A Full trace of all my work and additions/removals can be found on my github timeline.
