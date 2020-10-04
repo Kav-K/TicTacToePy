@@ -1,11 +1,14 @@
-TIC TAC TOE GAME FOR ICS3UO
-Kaveen Kumarasinghe
-647992
+# Tic Tac Toe
+Tic Tac Toe is a dual player, - Intelligent AI game mode, verse the computer.
 
+# Modules Used
+• Pygame.  
+• Random.  
+• Time.  
 
-2 GameType Tic Tac Toe
-2P - Two players, alternating turns
-Computer - Intelligent AI game mode, verse the computer
-
-Switch the game mode by clicking the game type on the bottom right corner when a game
-is not currently running.
+# How to Play?
+1. Install `pygame` module if you haven't by:``` pip install pygame``` in commandline.  
+2. Open and run `game.py`.  
+3. Click on **Play** to play the game.  
+4. To play the game again, click **Reset**.  
+# Have Fun!
